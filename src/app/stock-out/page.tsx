@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 // import { useInventory } from "@/contexts/InventoryContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +17,15 @@ import { ArrowDown } from "lucide-react";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
 import { useItemsQuery } from "@/hooks/useItems";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const StockOutPage = () => {
   // const { state, addTransaction, getCategoryName } = useInventory();
@@ -50,6 +58,8 @@ const StockOutPage = () => {
     retryDelay: 1000,
   });
 
+  const [modalOpen, setModalOpen] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -81,8 +91,7 @@ const StockOutPage = () => {
         notes: "",
         date: new Date().toISOString().split("T")[0],
       });
-
-      // Refetch transactions to show the new entry
+      setModalOpen(false);
       refetchTransactions();
     } catch (error) {
       alert(
@@ -118,14 +127,25 @@ const StockOutPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Form Barang Keluar</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Tombol + Barang Keluar dan Modal */}
+          <div className="flex justify-end mb-2">
+            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="bg-inventory-red hover:bg-inventory-red/90 font-semibold"
+                  onClick={() => setModalOpen(true)}
+                >
+                  + Barang Keluar
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg w-full p-0">
+                <DialogHeader className="p-6 pb-2">
+                  <DialogTitle>Form Barang Keluar</DialogTitle>
+                </DialogHeader>
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-4 px-6 pb-6 pt-2"
+                >
                   <div>
                     <Label htmlFor="item">Pilih Barang</Label>
                     <Select
@@ -157,7 +177,6 @@ const StockOutPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="quantity">Jumlah</Label>
@@ -195,7 +214,6 @@ const StockOutPage = () => {
                       />
                     </div>
                   </div>
-
                   <div>
                     <Label htmlFor="purpose">Keperluan</Label>
                     <Input
@@ -208,7 +226,6 @@ const StockOutPage = () => {
                       required
                     />
                   </div>
-
                   <div>
                     <Label htmlFor="notes">Catatan</Label>
                     <Textarea
@@ -221,7 +238,6 @@ const StockOutPage = () => {
                       rows={3}
                     />
                   </div>
-
                   {/* Warnings */}
                   {willBeOutOfStock && (
                     <Alert className="border-inventory-red bg-inventory-red/10">
@@ -231,7 +247,6 @@ const StockOutPage = () => {
                       </AlertDescription>
                     </Alert>
                   )}
-
                   {!willBeOutOfStock && willBeLowStock && (
                     <Alert className="border-inventory-yellow bg-inventory-yellow/10">
                       <AlertDescription>
@@ -240,139 +255,154 @@ const StockOutPage = () => {
                       </AlertDescription>
                     </Alert>
                   )}
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-inventory-red hover:bg-inventory-red/90"
-                    disabled={
-                      !formData.itemId ||
-                      formData.quantity <= 0 ||
-                      !selectedItem ||
-                      formData.quantity > selectedItem.stock
-                    }
-                  >
-                    <ArrowDown className="w-4 h-4 mr-2" />
-                    Keluarkan Barang
-                  </Button>
+                  <DialogFooter className="gap-2 pt-2">
+                    <Button
+                      type="submit"
+                      className="w-full bg-inventory-red hover:bg-inventory-red/90"
+                      disabled={
+                        !formData.itemId ||
+                        formData.quantity <= 0 ||
+                        !selectedItem ||
+                        formData.quantity > selectedItem.stock
+                      }
+                    >
+                      <ArrowDown className="w-4 h-4 mr-2" />
+                      Keluarkan Barang
+                    </Button>
+                    <DialogClose asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                      >
+                        Batal
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
                 </form>
-              </CardContent>
-            </Card>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* Recent Stock Out Transactions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Transaksi Barang Keluar Terbaru</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoadingTransactions && (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">Memuat data...</p>
+          <div className="p-4">
+            <h2 className="text-base font-bold mb-4">
+              Transaksi Barang Keluar Terbaru
+            </h2>
+            {isLoadingTransactions ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Memuat data...</p>
+              </div>
+            ) : transactionsError ? (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center mb-2">
+                  <span className="text-red-700 font-medium">
+                    Error loading data
+                  </span>
                 </div>
-              )}
-
-              {transactionsError && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="flex items-center mb-2">
-                    <span className="text-red-700 font-medium">
-                      Error loading data
-                    </span>
-                  </div>
-                  <p className="text-red-600 text-sm mb-3">
-                    {transactionsError instanceof Error
-                      ? transactionsError.message
-                      : "Failed to fetch transactions"}
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => refetchTransactions()}
-                    className="text-red-600 border-red-300 hover:bg-red-50"
-                  >
-                    Try Again
-                  </Button>
-                </div>
-              )}
-
-              {!isLoadingTransactions && !transactionsError && (
-                <div className="space-y-3">
-                  {transactions
-                    .sort(
-                      (
-                        a: Record<string, unknown>,
-                        b: Record<string, unknown>
-                      ) =>
-                        new Date(b.date as string).getTime() -
-                        new Date(a.date as string).getTime()
-                    )
-                    .slice(0, 5)
-                    .map((transaction: Record<string, unknown>) => {
-                      const item = items.find(
-                        (i: { id: string }) =>
-                          (i.id as string) === (transaction.itemId as string)
-                      );
-                      return (
-                        <div
-                          key={transaction.id as string}
-                          className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
+                <p className="text-red-600 text-sm mb-3">
+                  {transactionsError instanceof Error
+                    ? transactionsError.message
+                    : "Failed to fetch transactions"}
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refetchTransactions()}
+                  className="text-red-600 border-red-300 hover:bg-red-50"
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full border border-slate-200 text-base rounded-xl shadow-sm overflow-hidden">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-bold uppercase text-base">
+                      <th className="py-2 px-3 text-left">Barang</th>
+                      <th className="py-2 px-3 text-left">Kode</th>
+                      <th className="py-2 px-3 text-left">Keperluan</th>
+                      <th className="py-2 px-3 text-right">Jumlah</th>
+                      <th className="py-2 px-3 text-left">Satuan</th>
+                      <th className="py-2 px-3 text-left">Tanggal</th>
+                      <th className="py-2 px-3 text-left">Catatan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transactions
+                      .sort(
+                        (
+                          a: Record<string, unknown>,
+                          b: Record<string, unknown>
+                        ) =>
+                          new Date(b.date as string).getTime() -
+                          new Date(a.date as string).getTime()
+                      )
+                      .slice(0, 10)
+                      .map(
+                        (transaction: Record<string, unknown>, idx: number) => {
+                          const item = items.find(
+                            (i: { id: string }) =>
+                              (i.id as string) ===
+                              (transaction.itemId as string)
+                          );
+                          return (
+                            <tr
+                              key={transaction.id as string}
+                              className={`${
+                                idx % 2 === 1 ? "bg-indigo-50" : "bg-white"
+                              } border-b border-slate-200 hover:bg-indigo-100/60`}
+                            >
+                              <td className="py-2 px-3 font-medium text-slate-800">
+                                {(item?.name as string) || "Unknown Item"}
+                                <div className="text-xs text-slate-500">
+                                  {(item?.code as string) || "-"}
+                                </div>
+                              </td>
+                              <td className="py-2 px-3 text-xs text-slate-500">
+                                {(item?.code as string) || "-"}
+                              </td>
+                              <td className="py-2 px-3 text-slate-700">
+                                {transaction.purpose
+                                  ? (transaction.purpose as string)
+                                  : "Tidak ada keperluan"}
+                              </td>
+                              <td className="py-2 px-3 text-right font-bold text-red-600">
+                                -{transaction.quantity as number}
+                              </td>
+                              <td className="py-2 px-3 text-slate-700">
+                                {item?.unit as string}
+                              </td>
+                              <td className="py-2 px-3 text-slate-700">
+                                {new Date(
+                                  transaction.date as string
+                                ).toLocaleDateString("id-ID")}
+                              </td>
+                              <td className="py-2 px-3 text-xs text-slate-500">
+                                {typeof transaction.notes === "string" &&
+                                transaction.notes
+                                  ? transaction.notes
+                                  : ""}
+                              </td>
+                            </tr>
+                          );
+                        }
+                      )}
+                    {transactions.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan={7}
+                          className="py-12 text-center text-indigo-700 bg-indigo-50 text-base font-semibold"
                         >
-                          <div className="flex-1">
-                            <p className="font-medium">
-                              {(item?.name as string) || "Unknown Item"}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {transaction.purpose
-                                ? (transaction.purpose as string)
-                                : "Tidak ada keperluan"}{" "}
-                              •{" "}
-                              {new Date(
-                                transaction.date as string
-                              ).toLocaleDateString("id-ID")}
-                              <br />
-                              <span className="italic">
-                                Created:{" "}
-                                {transaction.createdAt
-                                  ? new Date(
-                                      transaction.createdAt as string
-                                    ).toLocaleString("id-ID", {
-                                      weekday: "long",
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })
-                                  : "-"}
-                              </span>
-                            </p>
-                            {typeof transaction.notes === "string" &&
-                              transaction.notes && (
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {transaction.notes}
-                                </p>
-                              )}
-                          </div>
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-inventory-red">
-                              -{transaction.quantity as number}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {item?.unit as string}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                  {transactions.length === 0 && (
-                    <p className="text-center text-muted-foreground py-8">
-                      Belum ada transaksi barang keluar
-                    </p>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                          Belum ada transaksi barang keluar
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </SignedIn>
       <SignedOut>

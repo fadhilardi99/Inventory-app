@@ -216,194 +216,187 @@ const HistoryPage = () => {
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Cari berdasarkan barang, supplier, atau keperluan..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Semua Transaksi" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Transaksi</SelectItem>
-                  <SelectItem value="in">Barang Masuk</SelectItem>
-                  <SelectItem value="out">Barang Keluar</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="date"
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
-                className="w-48"
-                placeholder="Filter tanggal"
-              />
-              {(filterDate || searchTerm || filterType !== "all") && (
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setFilterDate("");
-                    setSearchTerm("");
-                    setFilterType("all");
-                  }}
-                >
-                  Reset
-                </Button>
-              )}
-            </div>
+      <div className="flex flex-col md:flex-row gap-4 mb-2">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Cari berdasarkan barang, supplier, atau keperluan..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="flex gap-2">
+          <Select value={filterType} onValueChange={setFilterType}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Semua Transaksi" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Transaksi</SelectItem>
+              <SelectItem value="in">Barang Masuk</SelectItem>
+              <SelectItem value="out">Barang Keluar</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="w-48"
+            placeholder="Filter tanggal"
+          />
+          {(filterDate || searchTerm || filterType !== "all") && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFilterDate("");
+                setSearchTerm("");
+                setFilterType("all");
+              }}
+            >
+              Reset
+            </Button>
+          )}
+        </div>
+      </div>
 
       {/* Transactions List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Daftar Transaksi ({filteredTransactions.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {filteredTransactions.length > 0 ? (
-              filteredTransactions.map((transaction) => {
-                const item = items.find(
-                  (i: Record<string, unknown>) =>
-                    (i.id as string) === (transaction.itemId as string)
-                );
-                return (
-                  <div
-                    key={transaction.id as string}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className={`p-2 rounded-full ${
-                          (transaction.type as string) === "in"
-                            ? "bg-inventory-green/20 text-inventory-green"
-                            : "bg-inventory-red/20 text-inventory-red"
-                        }`}
-                      >
-                        {(transaction.type as string) === "in" ? (
-                          <ArrowUp className="w-4 h-4" />
-                        ) : (
-                          <ArrowDown className="w-4 h-4" />
+
+      <CardHeader>
+        <CardTitle>Daftar Transaksi ({filteredTransactions.length})</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {filteredTransactions.length > 0 ? (
+            filteredTransactions.map((transaction) => {
+              const item = items.find(
+                (i: Record<string, unknown>) =>
+                  (i.id as string) === (transaction.itemId as string)
+              );
+              return (
+                <div
+                  key={transaction.id as string}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`p-2 rounded-full ${
+                        (transaction.type as string) === "in"
+                          ? "bg-inventory-green/20 text-inventory-green"
+                          : "bg-inventory-red/20 text-inventory-red"
+                      }`}
+                    >
+                      {(transaction.type as string) === "in" ? (
+                        <ArrowUp className="w-4 h-4" />
+                      ) : (
+                        <ArrowDown className="w-4 h-4" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="font-semibold">
+                          {(item?.name as string) || "Unknown Item"}
+                        </h3>
+                        <Badge variant="outline" className="text-xs">
+                          {item?.code as string}
+                        </Badge>
+                        <Badge
+                          variant={
+                            (transaction.type as string) === "in"
+                              ? "default"
+                              : "destructive"
+                          }
+                          className={`text-xs ${
+                            (transaction.type as string) === "in"
+                              ? "bg-inventory-green"
+                              : "bg-inventory-red"
+                          }`}
+                        >
+                          {(transaction.type as string) === "in"
+                            ? "MASUK"
+                            : "KELUAR"}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>
+                          {new Date(
+                            transaction.date as string
+                          ).toLocaleDateString("id-ID", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                          <br />
+                          <span className="italic">
+                            Created:{" "}
+                            {transaction.createdAt
+                              ? new Date(
+                                  transaction.createdAt as string
+                                ).toLocaleString("id-ID", {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })
+                              : "-"}
+                          </span>
+                        </p>
+                        {transaction.supplier && (
+                          <p>Supplier: {transaction.supplier as string}</p>
+                        )}
+                        {transaction.purpose && (
+                          <p>Keperluan: {transaction.purpose as string}</p>
+                        )}
+                        {transaction.notes && (
+                          <p>Catatan: {transaction.notes as string}</p>
+                        )}
+                        {item && (
+                          <p>
+                            Kategori:{" "}
+                            {categories.find(
+                              (c: Record<string, unknown>) =>
+                                c.id === item.categoryId
+                            )?.name || item.categoryId}{" "}
+                            • Lokasi: {item.location as string}
+                          </p>
                         )}
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="font-semibold">
-                            {(item?.name as string) || "Unknown Item"}
-                          </h3>
-                          <Badge variant="outline" className="text-xs">
-                            {item?.code as string}
-                          </Badge>
-                          <Badge
-                            variant={
-                              (transaction.type as string) === "in"
-                                ? "default"
-                                : "destructive"
-                            }
-                            className={`text-xs ${
-                              (transaction.type as string) === "in"
-                                ? "bg-inventory-green"
-                                : "bg-inventory-red"
-                            }`}
-                          >
-                            {(transaction.type as string) === "in"
-                              ? "MASUK"
-                              : "KELUAR"}
-                          </Badge>
-                        </div>
-                        <div className="text-sm text-muted-foreground space-y-1">
-                          <p>
-                            {new Date(
-                              transaction.date as string
-                            ).toLocaleDateString("id-ID", {
-                              weekday: "long",
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                            <br />
-                            <span className="italic">
-                              Created:{" "}
-                              {transaction.createdAt
-                                ? new Date(
-                                    transaction.createdAt as string
-                                  ).toLocaleString("id-ID", {
-                                    weekday: "long",
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })
-                                : "-"}
-                            </span>
-                          </p>
-                          {transaction.supplier && (
-                            <p>Supplier: {transaction.supplier as string}</p>
-                          )}
-                          {transaction.purpose && (
-                            <p>Keperluan: {transaction.purpose as string}</p>
-                          )}
-                          {transaction.notes && (
-                            <p>Catatan: {transaction.notes as string}</p>
-                          )}
-                          {item && (
-                            <p>
-                              Kategori:{" "}
-                              {categories.find(
-                                (c: Record<string, unknown>) =>
-                                  c.id === item.categoryId
-                              )?.name || item.categoryId}{" "}
-                              • Lokasi: {item.location as string}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p
-                        className={`text-2xl font-bold ${
-                          (transaction.type as string) === "in"
-                            ? "text-inventory-green"
-                            : "text-inventory-red"
-                        }`}
-                      >
-                        {(transaction.type as string) === "in" ? "+" : "-"}
-                        {transaction.quantity as number}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {(item?.unit as string) || "unit"}
-                      </p>
                     </div>
                   </div>
-                );
-              })
-            ) : (
-              <div className="text-center py-12">
-                <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">
-                  {searchTerm || filterDate || filterType !== "all"
-                    ? "Tidak ada transaksi yang sesuai dengan filter"
-                    : "Belum ada transaksi yang tercatat"}
-                </p>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                  <div className="text-right">
+                    <p
+                      className={`text-2xl font-bold ${
+                        (transaction.type as string) === "in"
+                          ? "text-inventory-green"
+                          : "text-inventory-red"
+                      }`}
+                    >
+                      {(transaction.type as string) === "in" ? "+" : "-"}
+                      {transaction.quantity as number}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {(item?.unit as string) || "unit"}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center py-12">
+              <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">
+                {searchTerm || filterDate || filterType !== "all"
+                  ? "Tidak ada transaksi yang sesuai dengan filter"
+                  : "Belum ada transaksi yang tercatat"}
+              </p>
+            </div>
+          )}
+        </div>
+      </CardContent>
     </div>
   );
 };
