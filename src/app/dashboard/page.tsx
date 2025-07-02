@@ -52,6 +52,11 @@ const Dashboard = () => {
 
   // Calculate remaining stock for each item based on transaction history
   const calculateRemainingStock = (itemId: string) => {
+    const item = items.find((i: Record<string, unknown>) => i.id === itemId);
+    if (!item) return 0;
+
+    const baseStock = item.stock as number;
+
     const stockInTotal = stockInTransactions
       .filter((t: Record<string, unknown>) => t.itemId === itemId)
       .reduce(
@@ -68,7 +73,7 @@ const Dashboard = () => {
         0
       );
 
-    return stockInTotal - stockOutTotal;
+    return baseStock + stockInTotal - stockOutTotal;
   };
 
   // Calculate real statistics
@@ -343,7 +348,7 @@ const Dashboard = () => {
             </Alert>
           )}
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+          <div className="space-y-10">
             {/* Recent Transactions */}
             <Card className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
               <CardHeader className="pb-6 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30">
@@ -360,88 +365,131 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="space-y-4">
-                  {allTransactions.length > 0 ? (
-                    allTransactions.map(
-                      (transaction: Record<string, unknown>, index: number) => {
-                        const item = items.find(
-                          (i: Record<string, unknown>) =>
-                            i.id === transaction.itemId
-                        );
-                        return (
-                          <div
-                            key={transaction.id as string}
-                            className="group flex items-center justify-between p-5 rounded-2xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700/50 dark:to-slate-600/50 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in border border-slate-200/50 dark:border-slate-600/50"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                          >
-                            <div className="flex items-center space-x-4 flex-1">
-                              <div
-                                className={`p-3 rounded-2xl ${
-                                  (transaction.type as string) === "in"
-                                    ? "bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30"
-                                    : "bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-900/30 dark:to-pink-900/30"
-                                } shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                {allTransactions.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-700">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Tipe
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Barang
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Tanggal
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Detail
+                          </th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Jumlah
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allTransactions.map(
+                          (transaction: Record<string, unknown>) => {
+                            const item = items.find(
+                              (i: Record<string, unknown>) =>
+                                i.id === transaction.itemId
+                            );
+                            return (
+                              <tr
+                                key={transaction.id as string}
+                                className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
                               >
-                                {(transaction.type as string) === "in" ? (
-                                  <ArrowUp className="w-5 h-5 text-emerald-600" />
-                                ) : (
-                                  <ArrowDown className="w-5 h-5 text-red-600" />
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-bold text-foreground text-lg">
-                                  {(item?.name as string) || "Unknown Item"}
-                                </p>
-                                <div className="flex items-center space-x-2 mt-1">
-                                  <span className="text-sm text-muted-foreground">
-                                    📅{" "}
+                                <td className="py-3 px-4">
+                                  <div className="flex items-center space-x-2">
+                                    <div
+                                      className={`p-2 rounded-lg ${
+                                        (transaction.type as string) === "in"
+                                          ? "bg-emerald-100 dark:bg-emerald-900/30"
+                                          : "bg-red-100 dark:bg-red-900/30"
+                                      }`}
+                                    >
+                                      {(transaction.type as string) === "in" ? (
+                                        <ArrowUp className="w-4 h-4 text-emerald-600" />
+                                      ) : (
+                                        <ArrowDown className="w-4 h-4 text-red-600" />
+                                      )}
+                                    </div>
+                                    <span className="text-sm font-medium">
+                                      {(transaction.type as string) === "in"
+                                        ? "Masuk"
+                                        : "Keluar"}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <div>
+                                    <p className="font-semibold text-slate-900 dark:text-slate-100">
+                                      {(item?.name as string) || "Unknown Item"}
+                                    </p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                      {String(
+                                        categories.find(
+                                          (c: Record<string, unknown>) =>
+                                            c.id === item?.categoryId
+                                        )?.name || ""
+                                      )}
+                                    </p>
+                                  </div>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <span className="text-sm text-slate-600 dark:text-slate-300">
                                     {new Date(
                                       transaction.date as string
-                                    ).toLocaleDateString("id-ID")}
+                                    ).toLocaleDateString("id-ID", {
+                                      day: "2-digit",
+                                      month: "short",
+                                      year: "numeric",
+                                    })}
                                   </span>
-                                  <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                                  <span className="text-sm text-muted-foreground">
+                                </td>
+                                <td className="py-3 px-4">
+                                  <span className="text-sm text-slate-600 dark:text-slate-300">
                                     {String(
                                       transaction.supplier ||
                                         transaction.purpose ||
-                                        ""
+                                        "-"
                                     )}
                                   </span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right space-y-2">
-                              <Badge
-                                className={`${
-                                  (transaction.type as string) === "in"
-                                    ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-                                    : "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600"
-                                } text-white border-0 shadow-xl text-base px-4 py-2 font-bold transform group-hover:scale-110 transition-all duration-300`}
-                              >
-                                {(transaction.type as string) === "in"
-                                  ? "📈 +"
-                                  : "📉 -"}
-                                {transaction.quantity as number}
-                              </Badge>
-                            </div>
-                          </div>
-                        );
-                      }
-                    )
-                  ) : (
-                    <div className="text-center py-16">
-                      <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
-                        <TrendingUp className="w-10 h-10 text-gray-400" />
-                      </div>
-                      <p className="text-muted-foreground text-lg font-medium">
-                        Belum ada transaksi 📊
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Mulai tambahkan transaksi untuk melihat aktivitas
-                      </p>
+                                </td>
+                                <td className="py-3 px-4 text-right">
+                                  <Badge
+                                    className={`${
+                                      (transaction.type as string) === "in"
+                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                                        : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                                    } border-0 font-semibold`}
+                                  >
+                                    {(transaction.type as string) === "in"
+                                      ? "+"
+                                      : "-"}
+                                    {transaction.quantity as number}
+                                  </Badge>
+                                </td>
+                              </tr>
+                            );
+                          }
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                      <TrendingUp className="w-10 h-10 text-gray-400" />
                     </div>
-                  )}
-                </div>
+                    <p className="text-muted-foreground text-lg font-medium">
+                      Belum ada transaksi 📊
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Mulai tambahkan transaksi untuk melihat aktivitas
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -455,100 +503,122 @@ const Dashboard = () => {
                   <div>
                     <span className="text-xl font-bold">Sisa Stok Barang</span>
                     <p className="text-sm text-muted-foreground font-normal">
-                      Ranking berdasarkan sisa stok (Stock In - Stock Out)
+                      Ranking berdasarkan sisa stok (Stock + Stock In - Stock
+                      Out)
                     </p>
                   </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="space-y-4">
-                  {topItems.length > 0 ? (
-                    topItems.map(
-                      (item: Record<string, unknown>, index: number) => (
-                        <div
-                          key={item.id as string}
-                          className="group flex items-center justify-between p-5 rounded-2xl bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700/50 dark:to-slate-600/50 hover:shadow-xl hover:scale-105 transition-all duration-300 animate-fade-in border border-slate-200/50 dark:border-slate-600/50"
-                          style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                          <div className="flex items-center space-x-4 flex-1">
-                            <div
-                              className={`relative w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-2xl transform group-hover:scale-110 transition-all duration-300 ${
-                                index === 0
-                                  ? "bg-gradient-to-r from-yellow-400 to-orange-500"
-                                  : index === 1
-                                  ? "bg-gradient-to-r from-gray-400 to-gray-500"
-                                  : index === 2
-                                  ? "bg-gradient-to-r from-amber-600 to-amber-700"
-                                  : "bg-gradient-to-r from-blue-500 to-purple-600"
-                              }`}
+                {topItems.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-700">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Ranking
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Barang
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Kategori
+                          </th>
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Lokasi
+                          </th>
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                            Sisa Stok
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {topItems.map(
+                          (item: Record<string, unknown>, index: number) => (
+                            <tr
+                              key={item.id as string}
+                              className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
                             >
-                              {index === 0
-                                ? "🥇"
-                                : index === 1
-                                ? "🥈"
-                                : index === 2
-                                ? "🥉"
-                                : "⭐"}
-                              {index < 3 && (
-                                <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-300 rounded-full animate-pulse"></div>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-bold text-foreground text-lg">
-                                {item.name as string}
-                              </p>
-                              <div className="flex items-center space-x-2 mt-1">
-                                <span className="text-sm text-muted-foreground">
-                                  📂{" "}
+                              <td className="py-3 px-4">
+                                <div className="flex items-center space-x-2">
+                                  <div
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                                      index === 0
+                                        ? "bg-gradient-to-r from-yellow-400 to-orange-500"
+                                        : index === 1
+                                        ? "bg-gradient-to-r from-gray-400 to-gray-500"
+                                        : index === 2
+                                        ? "bg-gradient-to-r from-amber-600 to-amber-700"
+                                        : "bg-gradient-to-r from-blue-500 to-purple-600"
+                                    }`}
+                                  >
+                                    {index + 1}
+                                  </div>
+                                  {index < 3 && (
+                                    <span className="text-lg">
+                                      {index === 0
+                                        ? "🥇"
+                                        : index === 1
+                                        ? "🥈"
+                                        : "🥉"}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div>
+                                  <p className="font-semibold text-slate-900 dark:text-slate-100">
+                                    {item.name as string}
+                                  </p>
+                                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    {item.unit as string}
+                                  </p>
+                                </div>
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className="text-sm text-slate-600 dark:text-slate-300">
                                   {String(
                                     categories.find(
                                       (c: Record<string, unknown>) =>
                                         c.id === item.categoryId
-                                    )?.name ||
-                                      item.categoryId ||
-                                      ""
+                                    )?.name || ""
                                   )}
                                 </span>
-                                <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                                <span className="text-xs text-muted-foreground">
-                                  📍 {item.location as string}
+                              </td>
+                              <td className="py-3 px-4">
+                                <span className="text-sm text-slate-600 dark:text-slate-300">
+                                  {item.location as string}
                                 </span>
-                                <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                                <span className="text-xs text-muted-foreground">
-                                  #{index + 1} Ranking
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right space-y-1">
-                            <p className="font-black text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                              {item.remainingStock as number}
-                            </p>
-                            <p className="text-sm text-muted-foreground font-medium">
-                              {item.unit as string} tersisa
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Stok DB: {item.stock as number} | Min:{" "}
-                              {item.minStock as number}
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    )
-                  ) : (
-                    <div className="text-center py-16">
-                      <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
-                        <BarChart3 className="w-10 h-10 text-gray-400" />
-                      </div>
-                      <p className="text-muted-foreground text-lg font-medium">
-                        Belum ada barang 📦
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Tambahkan barang untuk melihat ranking stok
-                      </p>
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <div>
+                                  <p className="font-bold text-lg text-blue-600 dark:text-blue-400">
+                                    {item.remainingStock as number}
+                                  </p>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    tersisa
+                                  </p>
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                      <BarChart3 className="w-10 h-10 text-gray-400" />
                     </div>
-                  )}
-                </div>
+                    <p className="text-muted-foreground text-lg font-medium">
+                      Belum ada barang 📦
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Tambahkan barang untuk melihat ranking stok
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
