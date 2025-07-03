@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
 
 // GET: /api/categories/[id]
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
   try {
     const category = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: { items: true },
     });
     if (!category)

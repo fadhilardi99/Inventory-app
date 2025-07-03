@@ -21,55 +21,55 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+const navigationItems = [
+  {
+    name: "Dashboard",
+    path: "/",
+    icon: Home,
+    color: "from-violet-500 via-purple-500 to-fuchsia-500",
+    description: "Ringkasan inventory",
+  },
+  {
+    name: "Barang",
+    path: "/items",
+    icon: Archive,
+    color: "from-emerald-400 via-teal-500 to-cyan-500",
+    description: "Kelola barang",
+  },
+  {
+    name: "Kategori",
+    path: "/categories",
+    icon: List,
+    color: "from-orange-400 via-red-500 to-pink-500",
+    description: "Atur kategori",
+  },
+  {
+    name: "Barang Masuk",
+    path: "/stock-in",
+    icon: ArrowUp,
+    color: "from-green-400 via-emerald-500 to-teal-500",
+    description: "Input stok masuk",
+  },
+  {
+    name: "Barang Keluar",
+    path: "/stock-out",
+    icon: ArrowDown,
+    color: "from-red-400 via-pink-500 to-rose-500",
+    description: "Input stok keluar",
+  },
+  {
+    name: "Histori",
+    path: "/history",
+    icon: Calendar,
+    color: "from-indigo-400 via-purple-500 to-violet-500",
+    description: "Riwayat transaksi",
+  },
+];
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const lowStockCount = 0;
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-
-  const navigationItems = [
-    {
-      name: "Dashboard",
-      path: "/",
-      icon: Home,
-      color: "from-violet-500 via-purple-500 to-fuchsia-500",
-      description: "Ringkasan inventory",
-    },
-    {
-      name: "Barang",
-      path: "/items",
-      icon: Archive,
-      color: "from-emerald-400 via-teal-500 to-cyan-500",
-      description: "Kelola barang",
-    },
-    {
-      name: "Kategori",
-      path: "/categories",
-      icon: List,
-      color: "from-orange-400 via-red-500 to-pink-500",
-      description: "Atur kategori",
-    },
-    {
-      name: "Barang Masuk",
-      path: "/stock-in",
-      icon: ArrowUp,
-      color: "from-green-400 via-emerald-500 to-teal-500",
-      description: "Input stok masuk",
-    },
-    {
-      name: "Barang Keluar",
-      path: "/stock-out",
-      icon: ArrowDown,
-      color: "from-red-400 via-pink-500 to-rose-500",
-      description: "Input stok keluar",
-    },
-    {
-      name: "Histori",
-      path: "/history",
-      icon: Calendar,
-      color: "from-indigo-400 via-purple-500 to-violet-500",
-      description: "Riwayat transaksi",
-    },
-  ];
 
   React.useEffect(() => {
     // SEO optimization - update document title based on current route
