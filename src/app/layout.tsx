@@ -1,5 +1,4 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { DarkModeProvider } from "@/contexts/InventoryContext";
 import Layout from "@/components/Layout";
 import Providers from "./providers";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -33,11 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClerkProvider>
-          <DarkModeProvider>
-            <Providers>
-              <Layout>{children}</Layout>
-            </Providers>
-          </DarkModeProvider>
+          <Providers>
+            <Layout>{children}</Layout>
+          </Providers>
         </ClerkProvider>
       </body>
     </html>

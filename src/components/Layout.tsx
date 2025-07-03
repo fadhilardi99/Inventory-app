@@ -14,7 +14,7 @@ import {
   X,
   Star,
 } from "lucide-react";
-import { useDarkMode } from "@/contexts/InventoryContext";
+
 import { Button } from "@/components/ui/button";
 
 interface LayoutProps {
@@ -22,7 +22,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { darkMode, toggleDarkMode } = useDarkMode();
   const pathname = usePathname();
   const lowStockCount = 0;
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -82,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-100/80 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-foreground transition-all duration-500 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/50 to-indigo-100/80 text-foreground transition-all duration-500 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse" />
@@ -106,7 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 w-72 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-r border-slate-200/50 dark:border-slate-700/50 shadow-2xl z-50 transform transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 w-72 bg-white/70 backdrop-blur-xl border-r border-slate-200/50 shadow-2xl z-50 transform transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
@@ -122,7 +121,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Button>
 
           {/* Header */}
-          <div className="p-6 border-b border-slate-200/50 dark:border-slate-700/50 relative">
+          <div className="p-6 border-b border-slate-200/50 relative">
             <div className="flex items-center space-x-3">
               <div className="min-w-0 flex-1 flex items-center gap-4">
                 <div className="flex-1 min-w-0">
@@ -136,15 +135,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </span>
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleDarkMode}
-                  className="p-1 rounded-full hover:bg-gradient-to-r hover:from-yellow-400 hover:to-orange-500 hover:text-white transition-all duration-300 min-w-[32px] min-h-[32px]"
-                  aria-label="Toggle dark mode"
-                >
-                  <span className="text-lg">{darkMode ? "☀️" : "🌙"}</span>
-                </Button>
               </div>
             </div>
           </div>
@@ -162,7 +152,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   className={`group relative flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 animate-fade-in text-sm ${
                     isActive
                       ? `bg-gradient-to-r ${item.color} text-white shadow-lg shadow-purple-500/20 scale-105`
-                      : "text-muted-foreground hover:bg-white/60 dark:hover:bg-slate-800/60 hover:text-foreground hover:shadow"
+                      : "text-muted-foreground hover:bg-white/60 hover:text-foreground hover:shadow"
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
                   onClick={() => setSidebarOpen(false)}
@@ -171,7 +161,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     className={`relative p-1 rounded-lg ${
                       isActive
                         ? "bg-white/20"
-                        : "bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 group-hover:from-violet-100 group-hover:to-purple-100 dark:group-hover:from-violet-900/30 dark:group-hover:to-purple-900/30"
+                        : "bg-gradient-to-br from-slate-100 to-slate-200 group-hover:from-violet-100 group-hover:to-purple-100"
                     } transition-all duration-300`}
                   >
                     <Icon
@@ -217,7 +207,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Button
         variant="outline"
         size="sm"
-        className="fixed top-4 left-4 z-40 lg:hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-slate-200/50 dark:border-slate-700/50 shadow-lg"
+        className="fixed top-4 left-4 z-40 lg:hidden bg-white/80 backdrop-blur-sm border-slate-200/50 shadow-lg"
         onClick={() => setSidebarOpen(true)}
       >
         <Menu className="w-5 h-5" />

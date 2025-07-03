@@ -133,10 +133,8 @@ const Dashboard = () => {
       subtitle: `${totalCategories} kategori aktif`,
       icon: Package,
       gradient: "from-violet-500 via-purple-500 to-fuchsia-500",
-      bgGradient:
-        "from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20",
-      iconBg:
-        "from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30",
+      bgGradient: "from-violet-50 to-purple-50",
+      iconBg: "from-violet-100 to-purple-100",
       trend: totalItems > 0 ? "+12%" : "0%",
       description: "Total item inventory",
     },
@@ -146,10 +144,8 @@ const Dashboard = () => {
       subtitle: "Unit masuk bulan ini",
       icon: ArrowUp,
       gradient: "from-emerald-400 via-teal-500 to-cyan-500",
-      bgGradient:
-        "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20",
-      iconBg:
-        "from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30",
+      bgGradient: "from-emerald-50 to-teal-50",
+      iconBg: "from-emerald-100 to-teal-100",
       trend: totalStockIn > 0 ? "+8%" : "0%",
       description: "Peningkatan stok",
     },
@@ -159,10 +155,8 @@ const Dashboard = () => {
       subtitle: "Unit keluar bulan ini",
       icon: ArrowDown,
       gradient: "from-red-400 via-pink-500 to-rose-500",
-      bgGradient:
-        "from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20",
-      iconBg:
-        "from-red-100 to-pink-100 dark:from-red-900/30 dark:to-pink-100 dark:from-red-900/30 dark:to-pink-900/30",
+      bgGradient: "from-red-50 to-pink-50",
+      iconBg: "from-red-100 to-pink-100",
       trend: totalStockOut > 0 ? "-5%" : "0%",
       description: "Distribusi barang",
     },
@@ -172,10 +166,8 @@ const Dashboard = () => {
       subtitle: "Perlu segera diisi ulang",
       icon: Zap,
       gradient: "from-yellow-400 via-orange-500 to-red-500",
-      bgGradient:
-        "from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20",
-      iconBg:
-        "from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30",
+      bgGradient: "from-yellow-50 to-orange-50",
+      iconBg: "from-yellow-100 to-orange-100",
       trend: lowStockItems.length > 0 ? "⚠️" : "✅",
       description: "Alert stok minimum",
     },
@@ -202,9 +194,9 @@ const Dashboard = () => {
           <div className="relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600/10 via-purple-600/10 to-fuchsia-600/10 blur-3xl"></div>
             <div className="relative text-center space-y-6 py-12">
-              <div className="inline-flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 rounded-full border border-violet-200/50 dark:border-violet-700/50">
+              <div className="inline-flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-violet-100 to-purple-100 rounded-full border border-violet-200/50">
                 <Activity className="w-5 h-5 text-violet-600 animate-pulse" />
-                <span className="text-sm font-medium text-violet-700 dark:text-violet-300">
+                <span className="text-sm font-medium text-violet-700">
                   Live Dashboard
                 </span>
               </div>
@@ -252,7 +244,7 @@ const Dashboard = () => {
             {statsCards.map((card, index) => (
               <Card
                 key={card.title}
-                className="group relative overflow-hidden bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-rotate-1 animate-fade-in"
+                className="group relative overflow-hidden bg-white/60 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-rotate-1 animate-fade-in"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div
@@ -299,7 +291,7 @@ const Dashboard = () => {
                     {card.subtitle}
                   </p>
 
-                  <div className="pt-2 border-t border-slate-200/50 dark:border-slate-700/50">
+                  <div className="pt-2 border-t border-slate-200/50">
                     <p className="text-xs text-muted-foreground font-medium">
                       {card.description}
                     </p>
@@ -311,11 +303,11 @@ const Dashboard = () => {
 
           {/* Low Stock Alert */}
           {lowStockItems.length > 0 && (
-            <Alert className="border-yellow-400 bg-yellow-100/60 dark:bg-yellow-900/20 dark:border-yellow-700/50">
+            <Alert className="border-yellow-400 bg-yellow-100/60">
               <div className="p-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl">
                 <Zap className="h-5 w-5 text-white animate-bounce" />
               </div>
-              <AlertDescription className="text-yellow-800 dark:text-yellow-200 flex-1">
+              <AlertDescription className="text-yellow-800 flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                   <div>
                     <strong className="text-lg">
@@ -350,10 +342,10 @@ const Dashboard = () => {
 
           <div className="space-y-10">
             {/* Recent Transactions */}
-            <Card className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
-              <CardHeader className="pb-6 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/30 dark:to-violet-900/30">
+            <Card className="bg-white/60 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
+              <CardHeader className="pb-6 bg-gradient-to-r from-purple-50 to-violet-50">
                 <CardTitle className="flex items-center space-x-3">
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-purple-100 to-violet-100 dark:from-purple-900/50 dark:to-violet-900/50 shadow-xl">
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-purple-100 to-violet-100 shadow-xl">
                     <TrendingUp className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
@@ -369,20 +361,20 @@ const Dashboard = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                        <tr className="border-b border-slate-200">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Tipe
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Barang
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Tanggal
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Detail
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700">
                             Jumlah
                           </th>
                         </tr>
@@ -397,15 +389,15 @@ const Dashboard = () => {
                             return (
                               <tr
                                 key={transaction.id as string}
-                                className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                                className="border-b border-slate-100 hover:bg-slate-50 transition-colors duration-200"
                               >
                                 <td className="py-3 px-4">
                                   <div className="flex items-center space-x-2">
                                     <div
                                       className={`p-2 rounded-lg ${
                                         (transaction.type as string) === "in"
-                                          ? "bg-emerald-100 dark:bg-emerald-900/30"
-                                          : "bg-red-100 dark:bg-red-900/30"
+                                          ? "bg-emerald-100"
+                                          : "bg-red-100"
                                       }`}
                                     >
                                       {(transaction.type as string) === "in" ? (
@@ -423,10 +415,10 @@ const Dashboard = () => {
                                 </td>
                                 <td className="py-3 px-4">
                                   <div>
-                                    <p className="font-semibold text-slate-900 dark:text-slate-100">
+                                    <p className="font-semibold text-slate-900">
                                       {(item?.name as string) || "Unknown Item"}
                                     </p>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    <p className="text-sm text-slate-500">
                                       {String(
                                         categories.find(
                                           (c: Record<string, unknown>) =>
@@ -437,7 +429,7 @@ const Dashboard = () => {
                                   </div>
                                 </td>
                                 <td className="py-3 px-4">
-                                  <span className="text-sm text-slate-600 dark:text-slate-300">
+                                  <span className="text-sm text-slate-600">
                                     {new Date(
                                       transaction.date as string
                                     ).toLocaleDateString("id-ID", {
@@ -448,7 +440,7 @@ const Dashboard = () => {
                                   </span>
                                 </td>
                                 <td className="py-3 px-4">
-                                  <span className="text-sm text-slate-600 dark:text-slate-300">
+                                  <span className="text-sm text-slate-600">
                                     {String(
                                       transaction.supplier ||
                                         transaction.purpose ||
@@ -460,8 +452,8 @@ const Dashboard = () => {
                                   <Badge
                                     className={`${
                                       (transaction.type as string) === "in"
-                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
-                                        : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                                        ? "bg-emerald-100 text-emerald-700"
+                                        : "bg-red-100 text-red-700"
                                     } border-0 font-semibold`}
                                   >
                                     {(transaction.type as string) === "in"
@@ -479,7 +471,7 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="text-center py-16">
-                    <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                    <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
                       <TrendingUp className="w-10 h-10 text-gray-400" />
                     </div>
                     <p className="text-muted-foreground text-lg font-medium">
@@ -494,10 +486,10 @@ const Dashboard = () => {
             </Card>
 
             {/* Top Items by Stock */}
-            <Card className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
-              <CardHeader className="pb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
+            <Card className="bg-white/60 backdrop-blur-xl border-0 shadow-2xl overflow-hidden">
+              <CardHeader className="pb-6 bg-gradient-to-r from-blue-50 to-indigo-50">
                 <CardTitle className="flex items-center space-x-3">
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/50 dark:to-indigo-900/50 shadow-xl">
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100 shadow-xl">
                     <BarChart3 className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
@@ -514,20 +506,20 @@ const Dashboard = () => {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-700">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                        <tr className="border-b border-slate-200">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Ranking
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Barang
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Kategori
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
                             Lokasi
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">
+                          <th className="text-right py-3 px-4 font-semibold text-slate-700">
                             Sisa Stok
                           </th>
                         </tr>
@@ -537,7 +529,7 @@ const Dashboard = () => {
                           (item: Record<string, unknown>, index: number) => (
                             <tr
                               key={item.id as string}
-                              className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                              className="border-b border-slate-100 hover:bg-slate-50 transition-colors duration-200"
                             >
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-2">
@@ -567,16 +559,16 @@ const Dashboard = () => {
                               </td>
                               <td className="py-3 px-4">
                                 <div>
-                                  <p className="font-semibold text-slate-900 dark:text-slate-100">
+                                  <p className="font-semibold text-slate-900">
                                     {item.name as string}
                                   </p>
-                                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                                  <p className="text-sm text-slate-500">
                                     {item.unit as string}
                                   </p>
                                 </div>
                               </td>
                               <td className="py-3 px-4">
-                                <span className="text-sm text-slate-600 dark:text-slate-300">
+                                <span className="text-sm text-slate-600">
                                   {String(
                                     categories.find(
                                       (c: Record<string, unknown>) =>
@@ -586,16 +578,16 @@ const Dashboard = () => {
                                 </span>
                               </td>
                               <td className="py-3 px-4">
-                                <span className="text-sm text-slate-600 dark:text-slate-300">
+                                <span className="text-sm text-slate-600">
                                   {item.location as string}
                                 </span>
                               </td>
                               <td className="py-3 px-4 text-right">
                                 <div>
-                                  <p className="font-bold text-lg text-blue-600 dark:text-blue-400">
+                                  <p className="font-bold text-lg text-blue-600">
                                     {item.remainingStock as number}
                                   </p>
-                                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                                  <p className="text-xs text-slate-500">
                                     tersisa
                                   </p>
                                 </div>
@@ -608,7 +600,7 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <div className="text-center py-16">
-                    <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                    <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
                       <BarChart3 className="w-10 h-10 text-gray-400" />
                     </div>
                     <p className="text-muted-foreground text-lg font-medium">
