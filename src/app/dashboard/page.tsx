@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 // import { useInventory } from "@/contexts/InventoryContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 import { useItemsQuery } from "@/hooks/useItems";
 import { useCategoriesQuery } from "@/hooks/useCategories";
+import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
   // const { state, getLowStockItems, getCategoryName } = useInventory();
@@ -124,6 +125,21 @@ const Dashboard = () => {
     )
     .slice(0, 5);
 
+  // Tambahkan state untuk pagination transaksi dan top items
+  const [currentPageTrans, setCurrentPageTrans] = useState(1);
+  const [currentPageTop, setCurrentPageTop] = useState(1);
+  const itemsPerPage = 10;
+  const paginatedTransactions = allTransactions.slice(
+    (currentPageTrans - 1) * itemsPerPage,
+    currentPageTrans * itemsPerPage
+  );
+  const totalPagesTrans = Math.ceil(allTransactions.length / itemsPerPage);
+  const paginatedTopItems = topItems.slice(
+    (currentPageTop - 1) * itemsPerPage,
+    currentPageTop * itemsPerPage
+  );
+  const totalPagesTop = Math.ceil(topItems.length / itemsPerPage);
+
   const isLoading = isLoadingItems || isLoadingStockIn || isLoadingStockOut;
 
   const statsCards = [
@@ -134,7 +150,6 @@ const Dashboard = () => {
       icon: Package,
       gradient: "from-violet-500 via-purple-500 to-fuchsia-500",
       bgGradient: "from-violet-50 to-purple-50",
-      iconBg: "from-violet-100 to-purple-100",
       trend: totalItems > 0 ? "+12%" : "0%",
       description: "Total item inventory",
     },
@@ -144,8 +159,6 @@ const Dashboard = () => {
       subtitle: "Unit masuk bulan ini",
       icon: ArrowUp,
       gradient: "from-emerald-400 via-teal-500 to-cyan-500",
-      bgGradient: "from-emerald-50 to-teal-50",
-      iconBg: "from-emerald-100 to-teal-100",
       trend: totalStockIn > 0 ? "+8%" : "0%",
       description: "Peningkatan stok",
     },
@@ -155,8 +168,6 @@ const Dashboard = () => {
       subtitle: "Unit keluar bulan ini",
       icon: ArrowDown,
       gradient: "from-red-400 via-pink-500 to-rose-500",
-      bgGradient: "from-red-50 to-pink-50",
-      iconBg: "from-red-100 to-pink-100",
       trend: totalStockOut > 0 ? "-5%" : "0%",
       description: "Distribusi barang",
     },
@@ -166,8 +177,6 @@ const Dashboard = () => {
       subtitle: "Perlu segera diisi ulang",
       icon: Zap,
       gradient: "from-yellow-400 via-orange-500 to-red-500",
-      bgGradient: "from-yellow-50 to-orange-50",
-      iconBg: "from-yellow-100 to-orange-100",
       trend: lowStockItems.length > 0 ? "⚠️" : "✅",
       description: "Alert stok minimum",
     },
@@ -244,38 +253,48 @@ const Dashboard = () => {
             {statsCards.map((card, index) => (
               <Card
                 key={card.title}
-                className="group relative overflow-hidden bg-white/60 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 hover:-rotate-1 animate-fade-in"
-                style={{ animationDelay: `${index * 150}ms` }}
+                className="group relative overflow-hidden bg-white/90 border-0 shadow-xl hover:shadow-2xl transition-all duration-300 animate-fade-in"
+                style={{ animationDelay: `${index * 120}ms` }}
               >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${card.bgGradient} opacity-30 group-hover:opacity-50 transition-opacity duration-300`}
-                ></div>
-                <div className="absolute top-4 right-4 opacity-20">
-                  <card.icon className="w-16 h-16" />
-                </div>
-
-                <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-3">
-                  <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-base font-semibold text-gray-900">
                     {card.title}
                   </CardTitle>
                   <div
-                    className={`p-3 rounded-2xl bg-gradient-to-br ${card.iconBg} shadow-xl group-hover:scale-110 transition-transform duration-300`}
+                    className={`rounded-full p-2 ${
+                      card.title === "Total Barang"
+                        ? "bg-violet-100"
+                        : card.title === "Barang Masuk"
+                        ? "bg-emerald-100"
+                        : card.title === "Barang Keluar"
+                        ? "bg-red-100"
+                        : card.title === "Stok Rendah"
+                        ? "bg-yellow-100"
+                        : "bg-gray-100"
+                    }`}
                   >
                     <card.icon
-                      className={`h-6 w-6 bg-gradient-to-br ${card.gradient} bg-clip-text text-transparent`}
+                      className={`h-7 w-7 ${
+                        card.title === "Total Barang"
+                          ? "text-violet-600"
+                          : card.title === "Barang Masuk"
+                          ? "text-emerald-600"
+                          : card.title === "Barang Keluar"
+                          ? "text-red-500"
+                          : card.title === "Stok Rendah"
+                          ? "text-yellow-500"
+                          : "text-gray-400"
+                      }`}
                     />
                   </div>
                 </CardHeader>
-
-                <CardContent className="relative space-y-3">
+                <CardContent className="space-y-2 pt-0">
                   <div className="flex items-end space-x-2">
-                    <div
-                      className={`text-4xl font-black bg-gradient-to-r ${card.gradient} bg-clip-text text-transparent`}
-                    >
+                    <span className="text-4xl font-extrabold text-gray-900 leading-none">
                       {card.value}
-                    </div>
+                    </span>
                     <Badge
-                      className={`${
+                      className={`$${
                         card.trend.includes("+")
                           ? "bg-green-100 text-green-700"
                           : card.trend.includes("-")
@@ -286,13 +305,9 @@ const Dashboard = () => {
                       {card.trend}
                     </Badge>
                   </div>
-
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {card.subtitle}
-                  </p>
-
-                  <div className="pt-2 border-t border-slate-200/50">
-                    <p className="text-xs text-muted-foreground font-medium">
+                  <div className="text-sm text-gray-500">{card.subtitle}</div>
+                  <div className="pt-2 border-t border-slate-100">
+                    <p className="text-xs text-gray-400 font-medium">
                       {card.description}
                     </p>
                   </div>
@@ -357,30 +372,30 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                {allTransactions.length > 0 ? (
+                {paginatedTransactions.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full text-xs sm:text-base">
                       <thead>
-                        <tr className="border-b border-slate-200">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                        <tr className="border-b border-slate-200 text-xs sm:text-base">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700">
                             Tipe
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700">
                             Barang
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700">
                             Tanggal
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700 hidden sm:table-cell">
                             Detail
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-right py-2 px-2 font-semibold text-slate-700">
                             Jumlah
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {allTransactions.map(
+                        {paginatedTransactions.map(
                           (transaction: Record<string, unknown>) => {
                             const item = items.find(
                               (i: Record<string, unknown>) =>
@@ -391,7 +406,7 @@ const Dashboard = () => {
                                 key={transaction.id as string}
                                 className="border-b border-slate-100 hover:bg-slate-50 transition-colors duration-200"
                               >
-                                <td className="py-3 px-4">
+                                <td className="py-1 px-2">
                                   <div className="flex items-center space-x-2">
                                     <div
                                       className={`p-2 rounded-lg ${
@@ -406,19 +421,19 @@ const Dashboard = () => {
                                         <ArrowDown className="w-4 h-4 text-red-600" />
                                       )}
                                     </div>
-                                    <span className="text-sm font-medium">
+                                    <span className="text-xs sm:text-sm font-medium">
                                       {(transaction.type as string) === "in"
                                         ? "Masuk"
                                         : "Keluar"}
                                     </span>
                                   </div>
                                 </td>
-                                <td className="py-3 px-4">
+                                <td className="py-1 px-2">
                                   <div>
-                                    <p className="font-semibold text-slate-900">
+                                    <p className="font-semibold text-slate-900 text-xs sm:text-base">
                                       {(item?.name as string) || "Unknown Item"}
                                     </p>
-                                    <p className="text-sm text-slate-500">
+                                    <p className="text-[10px] sm:text-xs text-slate-500">
                                       {String(
                                         categories.find(
                                           (c: Record<string, unknown>) =>
@@ -428,8 +443,8 @@ const Dashboard = () => {
                                     </p>
                                   </div>
                                 </td>
-                                <td className="py-3 px-4">
-                                  <span className="text-sm text-slate-600">
+                                <td className="py-1 px-2">
+                                  <span className="text-xs sm:text-sm text-slate-600">
                                     {new Date(
                                       transaction.date as string
                                     ).toLocaleDateString("id-ID", {
@@ -439,8 +454,8 @@ const Dashboard = () => {
                                     })}
                                   </span>
                                 </td>
-                                <td className="py-3 px-4">
-                                  <span className="text-sm text-slate-600">
+                                <td className="py-1 px-2 hidden sm:table-cell">
+                                  <span className="text-xs sm:text-sm text-slate-600">
                                     {String(
                                       transaction.supplier ||
                                         transaction.purpose ||
@@ -448,13 +463,13 @@ const Dashboard = () => {
                                     )}
                                   </span>
                                 </td>
-                                <td className="py-3 px-4 text-right">
+                                <td className="py-1 px-2 text-right">
                                   <Badge
                                     className={`${
                                       (transaction.type as string) === "in"
                                         ? "bg-emerald-100 text-emerald-700"
                                         : "bg-red-100 text-red-700"
-                                    } border-0 font-semibold`}
+                                    } border-0 font-semibold text-xs sm:text-base`}
                                   >
                                     {(transaction.type as string) === "in"
                                       ? "+"
@@ -482,6 +497,44 @@ const Dashboard = () => {
                     </p>
                   </div>
                 )}
+
+                {/* Pagination Transaksi */}
+                {totalPagesTrans > 1 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-4">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
+                      Menampilkan {(currentPageTrans - 1) * itemsPerPage + 1}–
+                      {Math.min(
+                        currentPageTrans * itemsPerPage,
+                        allTransactions.length
+                      )}
+                      dari {allTransactions.length} transaksi
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setCurrentPageTrans((p) => Math.max(1, p - 1))
+                        }
+                        disabled={currentPageTrans === 1}
+                      >
+                        Sebelumnya
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setCurrentPageTrans((p) =>
+                            Math.min(totalPagesTrans, p + 1)
+                          )
+                        }
+                        disabled={currentPageTrans === totalPagesTrans}
+                      >
+                        Berikutnya
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -502,39 +555,39 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                {topItems.length > 0 ? (
+                {paginatedTopItems.length > 0 ? (
                   <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full text-xs sm:text-base">
                       <thead>
-                        <tr className="border-b border-slate-200">
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                        <tr className="border-b border-slate-200 text-xs sm:text-base">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700">
                             Ranking
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700">
                             Barang
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700 hidden sm:table-cell">
                             Kategori
                           </th>
-                          <th className="text-left py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-left py-2 px-2 font-semibold text-slate-700 hidden sm:table-cell">
                             Lokasi
                           </th>
-                          <th className="text-right py-3 px-4 font-semibold text-slate-700">
+                          <th className="text-right py-2 px-2 font-semibold text-slate-700">
                             Sisa Stok
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {topItems.map(
+                        {paginatedTopItems.map(
                           (item: Record<string, unknown>, index: number) => (
                             <tr
                               key={item.id as string}
                               className="border-b border-slate-100 hover:bg-slate-50 transition-colors duration-200"
                             >
-                              <td className="py-3 px-4">
+                              <td className="py-1 px-2">
                                 <div className="flex items-center space-x-2">
                                   <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${
                                       index === 0
                                         ? "bg-gradient-to-r from-yellow-400 to-orange-500"
                                         : index === 1
@@ -546,51 +599,32 @@ const Dashboard = () => {
                                   >
                                     {index + 1}
                                   </div>
-                                  {index < 3 && (
-                                    <span className="text-lg">
-                                      {index === 0
-                                        ? "🥇"
-                                        : index === 1
-                                        ? "🥈"
-                                        : "🥉"}
-                                    </span>
-                                  )}
                                 </div>
                               </td>
-                              <td className="py-3 px-4">
-                                <div>
-                                  <p className="font-semibold text-slate-900">
-                                    {item.name as string}
-                                  </p>
-                                  <p className="text-sm text-slate-500">
-                                    {item.unit as string}
-                                  </p>
+                              <td className="py-1 px-2">
+                                <div className="font-semibold text-slate-900 text-xs sm:text-base">
+                                  {item.name as string}
                                 </div>
                               </td>
-                              <td className="py-3 px-4">
-                                <span className="text-sm text-slate-600">
+                              <td className="py-1 px-2 hidden sm:table-cell">
+                                <span className="text-xs sm:text-base text-slate-700">
                                   {String(
                                     categories.find(
                                       (c: Record<string, unknown>) =>
                                         c.id === item.categoryId
-                                    )?.name || ""
+                                    )?.name || "-"
                                   )}
                                 </span>
                               </td>
-                              <td className="py-3 px-4">
-                                <span className="text-sm text-slate-600">
+                              <td className="py-1 px-2 hidden sm:table-cell">
+                                <span className="text-xs sm:text-base text-slate-700">
                                   {item.location as string}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-right">
-                                <div>
-                                  <p className="font-bold text-lg text-blue-600">
-                                    {item.remainingStock as number}
-                                  </p>
-                                  <p className="text-xs text-slate-500">
-                                    tersisa
-                                  </p>
-                                </div>
+                              <td className="py-1 px-2 text-right">
+                                <span className="text-xs sm:text-base font-bold text-indigo-700">
+                                  {item.remainingStock as number}
+                                </span>
                               </td>
                             </tr>
                           )
@@ -609,6 +643,41 @@ const Dashboard = () => {
                     <p className="text-sm text-muted-foreground mt-2">
                       Tambahkan barang untuk melihat ranking stok
                     </p>
+                  </div>
+                )}
+
+                {/* Pagination Top Items */}
+                {totalPagesTop > 1 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-4">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
+                      Menampilkan {(currentPageTop - 1) * itemsPerPage + 1}–
+                      {Math.min(currentPageTop * itemsPerPage, topItems.length)}
+                      dari {topItems.length} barang
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setCurrentPageTop((p) => Math.max(1, p - 1))
+                        }
+                        disabled={currentPageTop === 1}
+                      >
+                        Sebelumnya
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() =>
+                          setCurrentPageTop((p) =>
+                            Math.min(totalPagesTop, p + 1)
+                          )
+                        }
+                        disabled={currentPageTop === totalPagesTop}
+                      >
+                        Berikutnya
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>

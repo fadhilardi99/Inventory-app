@@ -215,7 +215,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Main Content */}
       <div className="lg:ml-72 relative z-10">
-        <main className="p-8 lg:p-12">
+        <main className="p-4 lg:p-12">
           <div className="animate-fade-in">{children}</div>
         </main>
       </div>
