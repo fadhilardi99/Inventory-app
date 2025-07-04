@@ -1,0 +1,8 @@
+{
+  "buildCommand": "chmod +x deploy.sh && ./deploy.sh && next build",
+  "functions": {
+    "app/api/**/*.js": {
+      "maxDuration": 30
+    }
+  }
+}
