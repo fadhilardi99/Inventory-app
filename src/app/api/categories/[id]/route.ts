@@ -5,9 +5,9 @@ import { NextRequest } from "next/server";
 // GET: /api/categories/[id]
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   try {
     const category = await prisma.category.findUnique({
       where: { id: id },
@@ -30,12 +30,13 @@ export async function GET(
 // PUT: /api/categories/[id]
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const data = await req.json();
     const category = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data,
     });
     return NextResponse.json(category);
@@ -50,10 +51,11 @@ export async function PUT(
 // DELETE: /api/categories/[id]
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await prisma.category.delete({ where: { id: params.id } });
+    const { id } = await params;
+    await prisma.category.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json(
